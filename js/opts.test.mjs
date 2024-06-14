@@ -1,42 +1,36 @@
 import { RuleSet, Options } from './opts.mjs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
 
-function testDependsAA() {
+test('depends a a', () => {
   const s = new RuleSet();
   s.addDep('a', 'a');
-  if (!s.isCoherent()) {
-    fail('testDependsAA s.isCoherent failed');
-  }
-}
+  assert.equal(s.isCoherent(), true);
+});
 
-function testDependsAB_BA() {
+test('depends ab ba', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('b', 'a');
-  if (!s.isCoherent()) {
-    fail('testDependsAB_BA s.isCoherent failed');
-  }
-}
+  assert.equal(s.isCoherent(), true);
+});
 
-function testExclusiveAB() {
+test('exclusive a b', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addConflict('a', 'b');
-  if (s.isCoherent()) {
-    fail('testExclusiveAB s.isCoherent failed');
-  }
-}
+  assert.equal(s.isCoherent(), false);
+});
 
-function testExclusiveAB_BC() {
+test('exclusive ab bc', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('b', 'c');
   s.addConflict('a', 'c');
-  if (s.isCoherent()) {
-    fail('testExclusiveAB_BC s.isCoherent failed');
-  }
-}
+  assert.equal(s.isCoherent(), false);
+});
 
-function testDeepDeps() {
+test('deep deps', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('b', 'c');
@@ -44,111 +38,59 @@ function testDeepDeps() {
   s.addDep('d', 'e');
   s.addDep('a', 'f');
   s.addConflict('e', 'f');
+  assert.equal(s.isCoherent(), false);
+});
 
-  if (s.isCoherent()) {
-    fail('testDeepDeps s.isCoherent failed');
-  }
-}
-
-function testExclusiveAB_BC_CA_DE() {
+test('exclusive ab bc ca de', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('b', 'c');
   s.addDep('c', 'a');
   s.addDep('d', 'e');
   s.addConflict('c', 'e');
-  if (!s.isCoherent()) {
-    fail('testExclusiveAB_BC_CA_DE s.isCoherent failed');
-  }
+  assert.equal(s.isCoherent(), true);
 
   const selected = new Options(s);
 
   selected.toggle('a');
-  if (!arrayEquals(selected.asArray(), ['a', 'c', 'b'])) {
-    fail('testExclusiveAB_BC_CA_DE Toggle a expected {a, c, b} got', selected.asArray());
-  }
+  assert.deepEqual(selected.asArray().toSorted(), ['a', 'b', 'c']);
 
   s.addDep('f', 'f');
   selected.toggle('f');
-  if (!arrayEquals(selected.asArray(), ['a', 'c', 'b', 'f'])) {
-    fail('testExclusiveAB_BC_CA_DE Toggle f expected {a, c, b, f} got', selected.asArray());
-  }
+  assert.deepEqual(selected.asArray().toSorted(), ['a', 'b', 'c', 'f']);
 
   selected.toggle('e');
-  if (!arrayEquals(selected.asArray(), ['e', 'f'])) {
-    fail('testExclusiveAB_BC_CA_DE Toggle e expected {e, f} got', selected.asArray());
-  }
+  assert.deepEqual(selected.asArray().toSorted(), ['e', 'f']);
 
   selected.toggle('b');
-  if (!arrayEquals(selected.asArray(), ['a', 'c', 'b', 'f'])) {
-    fail('testExclusiveAB_BC_CA_DE Toggle b expected {a, c, b, f} got', selected.asArray());
-  }
+  assert.deepEqual(selected.asArray().toSorted(), ['a', 'b', 'c', 'f']);
 
   s.addDep('b', 'g');
   selected.toggle('g');
   selected.toggle('b');
-  if (!arrayEquals(selected.asArray(), ['g', 'f'])) {
-    fail('testExclusiveAB_BC_CA_DE Toggle g, b expected {g, f} got', selected.asArray());
-  }
-}
+  assert.deepEqual(selected.asArray().toSorted(), ['f', 'g']);
+});
 
-function testAB_BC_Toggle() {
+test('ab bc toggle', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('b', 'c');
   const selected = new Options(s);
   selected.toggle('c');
-  if (!arrayEquals(selected.asArray(), ['c'])) {
-    fail('testAB_BC_Toggle Toggle expected {c} got', selected.asArray());
-  }
-}
+  assert.deepEqual(selected.asArray(), ['c']);
+});
 
-// Multiple dependencies and exclusions.
-function testAB_AC() {
+test('ab ac multiple dependencies and exclusions', () => {
   const s = new RuleSet();
   s.addDep('a', 'b');
   s.addDep('a', 'c');
   s.addConflict('b', 'd');
   s.addConflict('b', 'e');
-  if (!s.isCoherent()) {
-    fail('testAB_AC s.isCoherent failed');
-  }
+  assert.equal(s.isCoherent(), true);
 
   const selected = new Options(s);
   selected.toggle('d');
   selected.toggle('e');
   selected.toggle('a');
-  if (!arrayEquals(selected.asArray(), ['a', 'c', 'b'])) {
-    fail('testAB_AC Toggle expected {a, c, b} got', selected.asArray());
-  }
-}
-
-function arrayEquals(a, b) {
-  a.sort();
-  b.sort();
-  if (a === b) return true;
-  if (a.length !== b.length) return false;
-
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
-}
-
-function fail(...args) {
-  console.error(...args);
-  process.exit(1);
-}
-
-const suite = [
-  testDependsAA,
-  testDependsAB_BA,
-  testExclusiveAB,
-  testExclusiveAB_BC,
-  testDeepDeps,
-  testExclusiveAB_BC_CA_DE,
-  testAB_BC_Toggle,
-  testAB_AC,
-];
-
-suite.forEach((t) => t());
+  assert.deepEqual(selected.asArray().toSorted(), ['a', 'b', 'c']);
+});
