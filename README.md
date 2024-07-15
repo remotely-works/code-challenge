@@ -52,7 +52,7 @@ When the form is submitted, if the response is ok, the user should be redirected
 
 **5. (BONUS) Delete candidates**
 
-This task requires changes to the backend server. You will need to implement a `DELETE /candidates/<id>` endpoint in the server and then add a delete button (either in the list or the detail) to delete candidates. User should be asked to confirm the deletion before doing so.
+This task requires changes to the backend server. You will need to implement a `DELETE /candidates/{id}` endpoint in the server and then add a delete button (either in the list or the detail) to delete candidates. User should be asked to confirm the deletion before doing so.
 
 ## Backend
 
@@ -109,7 +109,7 @@ Returns up to 25 candidates depending on the requested page. Accepts a `page` qu
 }
 ```
 
-#### GET /candidates/<id>
+#### GET /candidates/{id}
 
 Returns the requested candidate by ID.
 
@@ -182,7 +182,7 @@ Expects a JSON body with the following shape:
 }
 ```
 
-#### PATCH /candidates/<id>
+#### PATCH /candidates/{id}
 
 Updates the candidate with the given id. **NOTE**: changes are ephemeral, if the server restarts, the changes are lost.
 
