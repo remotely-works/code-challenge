@@ -16,6 +16,14 @@ The delivered project should be a git repository. Ideally, the changes will be a
 
 The challenge is building a simple frontend application to manage a list of candidates. Changes will be added iteratively through the following points. You do not need to complete all of these, but the more you complete, the better.
 
+Adding tests is not mandatory, but will be a good bonus, if added.
+
+We will value the following:
+- Handling of asynchronous data.
+- Error handling and reporting.
+- Data validation in the frontend.
+- Good component design and reusability (if possible).
+
 **1. Candidate list**
 
 The index of the app should be a list of candidates where each row shows the picture, the name, the email and the skills of the candidate. This list should be paginated, so the user can browse through all candidates. The pages should have their own route.
