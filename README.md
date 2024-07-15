@@ -28,12 +28,12 @@ From the list on the index, an user should be able to go to the detail of the ca
 
 On the index of the app there should be a "Create candidate" button. Upon clicking on such button, the user should see a form (whether it's a modal or a separate page is left to the candidate) with the following fields:
 
-- First name
-- Last name
-- Email
-- Phone
-- Picture (must be able to select a file)
-- Skills (multiple)
+- First name (required)
+- Last name (required)
+- Email (required, must validate it's a valid email)
+- Phone (required)
+- Picture (must be able to select a file, required)
+- Skills (multiple, optional)
 
 When the form is submitted, if the response is ok, the user should be redirected to the details page to see the newly created candidate.
 
@@ -41,14 +41,14 @@ When the form is submitted, if the response is ok, the user should be redirected
 
 When viewing and individual candidate profile there should be a button to edit the candidate data. Upon clicking on such button, the user should see a form (whether it's a modal or a separate page is left to the candidate) with the following fields prefilled with existing data:
 
-- First name
-- Last name
-- Email
-- Phone
-- Picture (must be able to select a file)
-- Skills (multiple)
+- First name (required)
+- Last name (required)
+- Email (required, must validate it's a valid email)
+- Phone (required)
+- Picture (must be able to select a file, required)
+- Skills (multiple, optional)
 
-When the form is submitted, if the response is ok, the user should be redirected to the details page to see the newly created candidate.
+When the form is submitted, if the response is ok, the user should be redirected to the details page to see the updated candidate.
 
 **5. (BONUS) Delete candidates**
 
