@@ -6,7 +6,7 @@ This challenge consists of building a very simple frontend for a provided backen
 
 You can set up the project with the starter or toolkit of your choosing, as long as the project works by running `npm start` on the delivered project.
 
-The project **must** use **React**. Any other stack choice, as well as the design, is left to the candidate.
+The project **must** use **plain React** (no Next.js, Remix or any other framework). Any other stack choice (routing, ui library, etc), as well as the design, is left to the candidate.
 
 ### Delivered project
 
