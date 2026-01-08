@@ -10,7 +10,7 @@ Go is fairly easy to read, but if you don't feel confident with Go you can roll 
 
 You can set up the project with the starter or toolkit of your choosing, as long as the project works by running `npm start` on the delivered project.
 
-The project **must** use **React**. Any other stack choice, as well as the design, is left to the candidate. Do not overspend time in making it pretty, the important thing is that it works.
+The project **must** use **plain React** (no Next.js, Remix or any other framework). Any other stack choice, as well as the design, is left to the candidate. Do not overspend time in making it pretty, the important thing is that it works.
 
 ### Delivered project
 
