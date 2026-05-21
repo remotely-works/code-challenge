@@ -16,7 +16,7 @@ If you ship something you cannot explain, you will not pass. That is the most im
 
 ## AI policy
 
-You are expected to use AI assistants. We are not testing whether you can write code without them.
+You can use AI assistants. We are not testing whether you can write code without them.
 
 What we want to see is **Guided AI**, not one-shot prompting:
 
