@@ -97,14 +97,19 @@ You can ask us questions in writing at any time. If you decide to make an assump
 
 ## What to send us
 
-1. **Plan, early.** Before starting the exercise, send us a short written plan (5 to 10 lines) that describes what you will build, which patterns you chose, and what you will leave out.
-2. **Repository.** The code and a README that explains:
+Before starting, send us a short written plan (5 to 10 lines) describing what you will build, which patterns you chose, and what you will leave out.
+
+Your final submission must contain these three deliverables:
+
+1. **A runnable project in a GitHub repository.** When invoked, the project must analyze AI coding sessions belonging to the person running it and produce a result. Include the code and a README explaining:
    - how to run it,
    - the 3 to 5 decisions that mattered most, the options you rejected, and why,
    - the decisions you skipped, with one line each on why,
    - your assumptions.
-3. **Self-analysis.** Run your tool on the AI sessions you used to build the repo. Send us those sessions and the tool's output. Add 3 to 5 lines: is the result correct, and what did the tool miss or get wrong? Remove secrets and private data from the sessions before you send them.
-4. **Next steps.** After finishing the exercise, one paragraph or two describing what you would build next if you had one more week, and why.
+2. **The results from analyzing your own work.** Run the project on the AI coding sessions you used to build it and send us the resulting output. You may use any artifact or format that communicates the result clearly. Add 3 to 5 lines explaining whether the result is accurate and what the project missed or got wrong.
+3. **The sessions used to build the project.** Send us the actual AI coding session transcripts so we can analyze them independently. Prefer the original JSONL files when available, or the coding agent's equivalent native format. Remove secrets and unrelated private data, and note any material redactions.
+
+Also include one or two paragraphs describing what you would build next if you continued the project, and why.
 
 ## How we will review it
 
