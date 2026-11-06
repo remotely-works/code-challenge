@@ -1,292 +1,111 @@
-# Remotely Challenge
+# Take-home: AI Session Analyzer
 
-Welcome. This challenge is part of our hiring process. Before you start, please read this whole document. The way we evaluate this challenge has changed significantly in the last year, and the differences from a "standard take-home" are the whole point.
+## Why this exercise exists
 
-## What we are actually testing
+AI agents have changed how engineers work, and most interviews no longer show how a person really builds software. We are building a tool that analyzes developers' AI coding sessions. It is similar to [Paxel](https://paxel.ycombinator.com/) ([open-source version](https://github.com/staru09/open-paxel)) -which might have some useful hints-, but it goes into more detail instead of doing a [superficial analysis](https://paxel.ycombinator.com/results/jdwmiy0x). For example the following articles describes relevant rules one could use [when working with agents](https://deepakness.com/raw/pi-agent-lessons-from-dillon/).
 
-We are not testing whether you can write code from scratch with no help. In 2026, that is no longer a useful signal.
+Our long-term goal is to tell strong engineers from less skilled ones by how they work with agents. That is hard, and **it is not the goal of this exercise**. This exercise has a smaller goal: detect and describe **behavior patterns** in AI coding sessions.
 
-We are testing three things:
+## This exercise is open on purpose
 
-1. **Judgment.** Can you make good calls about libraries, architecture, data modeling, and UX without anyone holding your hand?
-2. **Guided AI.** Can you direct an AI agent (Cursor, Claude Code, Copilot, Codex, whatever you prefer) to produce work you would be proud to ship, catching it when it is confidently wrong?
-3. **Ownership.** Do you understand every line in your own submission well enough to defend it in a live conversation?
+There is no single correct solution. The problem has many more decisions than you can handle in one day, so you will have to choose. Part of the exercise is deciding which decisions matter for an MVP and which ones you can postpone or skip.
 
-If you ship something you cannot explain, you will not pass. That is the most important sentence in this README.
+We are interested in how you:
 
-## AI policy
+- reduce an ambiguous problem to something you can finish,
+- make decisions and explain them,
+- keep the solution simple,
+- move forward on your own, and
+- communicate in writing.
 
-You can use AI assistants. We are not testing whether you can write code without them.
+A small tool that works from start to end and has clear reasons behind it is better than a large design that is not finished.
 
-What we want to see is **Guided AI**, not one-shot prompting:
+## The task
 
-- You specified intent clearly before the agent started writing.
-- You reviewed what the agent produced and pushed back when it was wrong, over-engineered, or product-wrong.
-- You made the architectural and product calls the agent could not make for you.
-- The commit history reflects iteration and decision-making, not a single dump of agent output.
+Build an MVP that reads AI coding sessions and reports which behavior patterns appear in them.
 
-One-shot submissions are easy to spot and will not pass. Submissions where the candidate cannot explain their own code in the follow-up interview will not pass either.
+**The MVP must be able to analyze your own sessions**, including the sessions you use to build it.
 
-## Evaluation rubric
+Some patterns you could detect:
 
-We score submissions on these dimensions, roughly in this order:
+- **Planning:** Does the developer write a plan before implementation? How detailed is it?
+- **Plan following:** Does the agent follow the plan, or does the work drift away from it?
+- **Steering:** How often does the developer correct, interrupt, or redirect the agent?
+- **Context pressure:** Do sessions run into compaction or context limits?
+- **Parallelism:** Does the developer run several sessions or agents at the same time?
+- **Verification:** Does the developer or the agent test and check the result?
 
-1. **It works end to end.** All required features run on a clean checkout.
-2. **Code quality and structure.** Clear boundaries, sensible naming, no dead code, no obvious agent-generated cruft.
-3. **Library and framework choices.** You picked sensible tools and can justify why.
-4. **UI quality.** See the next section.
-5. **Test coverage where it matters.** Not exhaustive, but present on the parts that would hurt to break.
-6. **Commit history.** Incremental, readable, tells a story.
-7. **Ability to defend every decision in the follow-up interview.**
+You do not need all of these. **Choose at least 2**, or define your own, and explain why you chose them. You decide how each pattern is defined and detected.
 
-Shipping more features matters less than shipping fewer features well. A clean implementation of features 1 to 4 beats a buggy implementation of all 6.
+## Input
 
-## UI quality
+Use the session logs of any coding agent you use. Some examples:
 
-The frontend should look like something you would be comfortable shipping to a real user of a real product.
+- Claude Code: `~/.claude/projects/**/*.jsonl`
+- Codex: `~/.codex/sessions/`
+- Any other agent that stores session transcripts
 
-You do not need to be a designer. You do need to use the tools that make decent UI nearly free in 2026: a component library (shadcn/ui, Radix, Mantine, Chakra, MUI) and/or a utility framework (Tailwind). Reach for one. There is no excuse for an unstyled form in the year of our lord 2026.
+## Decisions you will face
 
-Submissions with raw, unstyled HTML, broken layouts, no loading or error states, or obvious visual bugs will not pass.
+These are some of the engineering decisions in this problem. **You do not have to answer all of them.** For each one, you can make a decision, or skip it and say in one line why it is not important for your MVP. A clear "I skipped this because…" is as valuable as a solution.
 
-## What happens after you submit
+### Sources and providers
 
-If your submission passes our initial review, we will invite you to a **live technical interview** where we walk through your own code line by line. You should expect questions like:
+- Do you support one agent tool or several? If several, what is the smallest piece of code you must write for each new one?
+- Do you read the transcript files the tool already writes, use its hooks or plugins, or capture the traffic to the model API? Each option changes what you can see and how easily it breaks when the tool updates.
+- How do you know which tool and which model produced a session?
 
-- "Why did you choose this library over the alternatives?"
-- "Walk me through what happens when the user clicks this button."
-- "What did the agent get wrong here, and how did you catch it?"
-- "Why did you accept this trade-off?"
-- "If we asked you to add multi-tenancy to this, where would you start?"
+### Normalization
 
-This interview is the most important part of the process. Candidates who shipped their own work tend to enjoy it. Candidates who did not, do not.
+- Providers represent messages, tool calls, tool results, thinking, subagents, compaction, and resumed sessions in different ways. Do you need one common format? If so, what does it keep and what does it drop?
+- Do you keep the raw data next to your normalized data, so you can parse it again when your format changes?
+- How do you order events? Look out for parallel subagents and sessions that resume days later.
 
----
+### Sessions, work, and code
 
-## The Challenge
+- One session can produce many commits, and one commit can come from many sessions. Do you link sessions to git at all?
+- Do you need a unit above the session, an **episode**: one piece of work that spans several sessions? If so, how do you decide that two sessions belong to the same episode (branch, time, files touched, something else)? What happens when two unrelated tasks run in the same repository at the same time?
+- If you link to commits, what happens after a rebase, squash, or amend?
 
-This challenge consists of building a simple app for managing candidates. There is no frontend provided, but a small in-memory backend in Go is provided. Part of the task is changing that backend to not be in-memory anymore.
+### Analysis
 
-### What if I do not know Go?
+- Do you detect patterns with fixed rules, an LLM, or a mix? What does each one cost, and can you get the same result twice?
+- What does a result mean? For example, is a high steering count good (the developer guides the agent actively) or bad (the first prompt was weak)?
+- Do you report one score, several dimensions, or specific moments in the session with a link back to the exact message?
+- How do you know your detection is correct?
 
-Go is fairly easy to read, but if you do not feel confident with Go you can roll your own backend in your preferred stack. Please include instructions on how to run it.
+### Privacy
 
-### Setup
+- Sessions can contain secrets, private code, and personal conversations. Do you need to handle this in an MVP that only runs locally? Does your answer change if the tool uploads sessions to a server?
+- Tool output (file contents, logs, environment variables) is often the largest and most sensitive part of a session. Do you keep it?
 
-You can set up the project with the starter or toolkit of your choosing, as long as the project works by running `npm start` on the delivered project.
+### Scope and form
 
-The project **must** use **plain React** (no Next.js, Remix, or any other meta-framework). Library choices beyond that are yours.
+- CLI, local web page, or something else? Where does the output go?
+- What do you store, if anything? Files, a database, nothing?
+- What would break first if 100 developers used your tool?
 
-### Delivered project
+## Constraints
 
-The delivered project should be a git repository. Changes should be added incrementally across multiple commits. A single "initial commit" with the whole solution is a red flag.
+- **Time:** Plan for about one day of work. Please do not spend more than that. We value good decisions under the limit more than full coverage.
+- **Stack:** Your choice. A CLI that writes a report is enough. A UI is not necessary.
+- **AI tools:** Use them as much as you want. We expect you to.
 
-### Tasks
+## Questions
 
-Implement the following features. You do not need to complete all of them, but the more you complete *well*, the better.
+You can ask us questions in writing at any time. If you decide to make an assumption instead of asking, write it in your README. Knowing when to ask and when to decide alone is part of the exercise.
 
-**1. Candidate list**
+## What to send us
 
-The index of the app should be a list of candidates. Each row shows picture, name, email, and skills. The list should be paginated so the user can browse all candidates.
-
-**2. Candidate detail**
-
-From the list, the user should be able to navigate to the detail page of a candidate on its own route. This page displays all candidate data.
-
-**3. Create candidates**
-
-The index should have a "Create candidate" button. Clicking it shows a form (modal or page, your call) with the following fields:
-
-- First name (required)
-- Last name (required)
-- Email (required, must be a valid email)
-- Phone (required)
-- Picture (file upload, required)
-- Skills (multiple, optional)
-
-On successful submission, redirect to the detail page of the new candidate.
-
-**4. Edit candidates**
-
-From a candidate's detail page, the user should be able to edit. The form is the same as create, prefilled with current data. On success, redirect back to the detail page.
-
-**5. Persistence**
-
-The provided backend stores candidates in memory. Replace this with a SQL database of your choice. You may make any changes you want to the backend logic, structure, and architecture during this step.
-
-**6. (Bonus) Delete candidates**
-
-Implement `DELETE /candidates/{id}` in the server and add a delete affordance (in the list, the detail, or both). The user must confirm before deletion.
-
----
-
-## Backend
-
-The backend is a simple REST API for retrieving, updating, and creating candidates.
-
-### Running the backend
-
-With Go:
-
-```
-cd server && go run .
-```
-
-Or with Docker:
-
-```
-cd server
-docker build -t remotely-server .
-docker run -d -p 8080:8080 --name remotely-server remotely-server
-```
-
-The backend has CORS enabled and runs on `localhost:8080`.
-
-### Endpoints
-
-#### GET /candidates
-
-Returns up to 25 candidates depending on the requested page. Accepts a `page` query parameter that must be a number.
-
-**Example response:**
-
-```json
-{
-  "status": 200,
-  "data": {
-    "total": 80,
-    "candidates": [
-      {
-        "id": 1,
-        "first_name": "John",
-        "last_name": "Doe",
-        "picture": "<data uri>",
-        "phone": "<phone>",
-        "email": "<email>",
-        "skills": ["Java", "Kotlin"]
-      }
-    ],
-    "pagination": {
-      "per_page": 25,
-      "page": 1,
-      "total_pages": 4
-    }
-  }
-}
-```
-
-#### GET /candidates/{id}
-
-Returns the requested candidate by ID.
-
-**Example response:**
-
-```json
-{
-  "status": 200,
-  "data": {
-    "id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "picture": "<data uri>",
-    "phone": "<phone>",
-    "email": "<email>",
-    "skills": ["Java", "Kotlin"]
-  }
-}
-```
-
-**Example response if not found:**
-
-```json
-{
-  "status": 404,
-  "errors": ["not found"]
-}
-```
-
-#### POST /candidates
-
-Creates a new candidate. **Note:** changes are ephemeral; if the server restarts, the changes are lost (this is what you fix in task 5).
-
-Expects a JSON body:
-
-```json
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "picture": "<data uri>",
-  "phone": "<phone>",
-  "email": "<email>",
-  "skills": ["Java", "Kotlin"]
-}
-```
-
-**Example response:**
-
-```json
-{
-  "status": 201,
-  "data": {
-    "id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "picture": "<data uri>",
-    "phone": "<phone>",
-    "email": "<email>",
-    "skills": ["Java", "Kotlin"]
-  }
-}
-```
-
-**Example response on validation errors:**
-
-```json
-{
-  "status": 400,
-  "errors": ["first_name is not valid", "last_name is not valid"]
-}
-```
-
-#### PATCH /candidates/{id}
-
-Updates the candidate with the given id. **Note:** changes are ephemeral until you implement task 5.
-
-Expects a JSON body:
-
-```json
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "picture": "<data uri>",
-  "phone": "<phone>",
-  "email": "<email>",
-  "skills": ["Java", "Kotlin"]
-}
-```
-
-**Example response:**
-
-```json
-{
-  "status": 200,
-  "data": {
-    "id": 1,
-    "first_name": "John",
-    "last_name": "Doe",
-    "picture": "<data uri>",
-    "phone": "<phone>",
-    "email": "<email>",
-    "skills": ["Java", "Kotlin"]
-  }
-}
-```
-
-**Example response on validation errors:**
-
-```json
-{
-  "status": 400,
-  "errors": ["first_name is not valid", "last_name is not valid"]
-}
-```
+1. **Plan, early.** Before starting the exercise, send us a short written plan (5 to 10 lines) that describes what you will build, which patterns you chose, and what you will leave out.
+2. **Repository.** The code and a README that explains:
+   - how to run it,
+   - the 3 to 5 decisions that mattered most, the options you rejected, and why,
+   - the decisions you skipped, with one line each on why,
+   - your assumptions.
+3. **Self-analysis.** Run your tool on the AI sessions you used to build the repo. Send us those sessions and the tool's output. Add 3 to 5 lines: is the result correct, and what did the tool miss or get wrong? Remove secrets and private data from the sessions before you send them.
+4. **Next steps.** After finishing the exercise, one paragraph or two describing what you would build next if you had one more week, and why.
+
+## How we will review it
+
+We will read your plan, your code, and your README. We will also run your tool on the sessions you used to build it and compare its output with what we see in those sessions.
